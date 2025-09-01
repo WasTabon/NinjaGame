@@ -203,7 +203,7 @@ Transform:
   m_GameObject: {fileID: 274196122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.67, y: -3.76, z: 0}
+  m_LocalPosition: {x: 1.67, y: -1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -224,6 +224,7 @@ MonoBehaviour:
   _jumpFeedback: {fileID: 692798805}
   _collisionFeedback: {fileID: 330490679}
   _collisionParticle: {fileID: 101046438202345881, guid: fc2836a8f43694e478f1fd378667413a, type: 3}
+  _poolSize: 10
   jumpDistance: 3
   jumpHeight: 2.58
   duration: 0.25
@@ -805,8 +806,8 @@ Transform:
   m_GameObject: {fileID: 360311196}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.72, y: 0.01, z: 0}
-  m_LocalScale: {x: 2.1953, y: 9.94782, z: 1}
+  m_LocalPosition: {x: -2.72, y: 0.2542, z: 0}
+  m_LocalScale: {x: 2.1953, y: 10.436258, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1567,8 +1568,8 @@ Transform:
   m_GameObject: {fileID: 1179259884}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.72, y: 0.01, z: 0}
-  m_LocalScale: {x: 2.1953, y: 9.94782, z: 1}
+  m_LocalPosition: {x: 2.72, y: 0.2542, z: 0}
+  m_LocalScale: {x: 2.1953, y: 10.436258, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2015,6 +2016,18 @@ PrefabInstance:
       value: LightningFloorBlueTrail
       objectReference: {fileID: 0}
     - target: {fileID: 7872354072249820640, guid: d7cc93ccb5c649546a205defc521cc09, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7872354072249820640, guid: d7cc93ccb5c649546a205defc521cc09, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7872354072249820640, guid: d7cc93ccb5c649546a205defc521cc09, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7872354072249820640, guid: d7cc93ccb5c649546a205defc521cc09, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.1
       objectReference: {fileID: 0}
@@ -2068,6 +2081,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2139181142}
+  - component: {fileID: 2139181143}
   m_Layer: 0
   m_Name: CameraRig
   m_TagString: Untagged
@@ -2084,13 +2098,28 @@ Transform:
   m_GameObject: {fileID: 2139181141}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0.25, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1768485505}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2139181143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2139181141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a730ff67503cda45b0a72316389933b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 274196124}
+  offset: {x: 0, y: 1.5, z: -10}
+  smoothSpeed: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

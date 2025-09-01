@@ -50,6 +50,8 @@ public class ArcJumpCurve2D : MonoBehaviour
     {
         SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
+        
+        SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
@@ -105,6 +107,21 @@ public class ArcJumpCurve2D : MonoBehaviour
         _jumpFeedback.PlayFeedbacks();
         DoArcJump();
     }
+
+    private void HandleJumpCombo()
+    {
+        if (!isJumping) return;
+
+        Debug.Log("Combo Jump");
+
+        isJumping = false;
+
+        mirror = !mirror;
+
+        _jumpFeedback.PlayFeedbacks();
+        DoArcJump();
+    }
+
 
     public void DoArcJump()
     {
