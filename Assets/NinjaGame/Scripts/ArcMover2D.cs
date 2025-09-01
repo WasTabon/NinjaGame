@@ -1,16 +1,22 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
+using MoreMountains.Feedbacks;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class ArcJumpCurve2D : MonoBehaviour
 {
+    [SerializeField] private MMF_Player _jumpFeedback;
+    [SerializeField] private MMF_Player _collisionFeedback;
+
+    [SerializeField] private GameObject _collisionParticle;
+    [SerializeField] private int _poolSize = 5;
+
     [Header("Arc Settings")]
-    public float jumpDistance = 3f;       // длина по X
-    public float jumpHeight = 2f;         // масштаб высоты
-    public float duration = 0.5f;         // время прыжка
-    public bool mirror = false;           // зеркалить по X
-    public AnimationCurve arcCurve =      // форма дуги
-        AnimationCurve.EaseInOut(0, 0, 1, 1);
+    public float jumpDistance = 3f;       
+    public float jumpHeight = 2f;         
+    public float duration = 0.5f;         
+    public bool mirror = false;           
+    public AnimationCurve arcCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Gizmos")]
     public bool showGizmos = true;
@@ -22,17 +28,82 @@ public class ArcJumpCurve2D : MonoBehaviour
     private bool isJumping;
     private float direction;
 
+    // Пул партиклов
+    private Queue<GameObject> particlePool;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
+
+        // Инициализация пула
+        particlePool = new Queue<GameObject>();
+        for (int i = 0; i < _poolSize; i++)
+        {
+            GameObject obj = Instantiate(_collisionParticle);
+            obj.SetActive(false);
+            particlePool.Enqueue(obj);
+        }
     }
 
-    [ContextMenu("Jump")]
-    public void HandleJump()
+    private void Start()
     {
+        SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
+        SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
+    }
+
+    private void OnCollisionEnter2D(Collision2D coll)
+    {
+        if (coll.gameObject.CompareTag("Wall"))
+        {
+            _collisionFeedback.PlayFeedbacks();
+            SpawnParticle(transform.position);
+
+            if (Application.isMobilePlatform)
+            {
+                Handheld.Vibrate();
+            }
+        }
+    }
+
+    private void SpawnParticle(Vector3 position)
+    {
+        if (particlePool.Count == 0) return;
+
+        GameObject particle = particlePool.Dequeue();
+        particle.transform.position = position;
+        particle.SetActive(true);
+
+        // Вернуть в пул после завершения системы частиц
+        var ps = particle.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            ps.Play();
+            StartCoroutine(ReturnToPoolAfterDelay(particle, ps.main.duration));
+        }
+    }
+
+    private System.Collections.IEnumerator ReturnToPoolAfterDelay(GameObject particle, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        particle.SetActive(false);
+        particlePool.Enqueue(particle);
+    }
+
+    private void HandleJumpLeft()
+    {
+        if (isJumping || mirror) return;
+        mirror = true;
+        _jumpFeedback.PlayFeedbacks();
         DoArcJump();
-        mirror = !mirror;
+    }
+
+    private void HandleJumpRight()
+    {
+        if (isJumping || !mirror) return;
+        mirror = false;
+        _jumpFeedback.PlayFeedbacks();
+        DoArcJump();
     }
 
     public void DoArcJump()
@@ -65,10 +136,8 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (!showGizmos) return;
 
         Gizmos.color = gizmoColor;
-
         Vector3 from = Application.isPlaying ? startPos : transform.position;
         float dir = mirror ? -1f : 1f;
-
         int segments = 30;
         Vector3 prevPoint = from;
 
@@ -78,7 +147,6 @@ public class ArcJumpCurve2D : MonoBehaviour
             float x = jumpDistance * tNorm * dir;
             float y = arcCurve.Evaluate(tNorm) * jumpHeight;
             Vector3 nextPoint = from + new Vector3(x, y, 0f);
-
             Gizmos.DrawLine(prevPoint, nextPoint);
             prevPoint = nextPoint;
         }
