@@ -19,10 +19,11 @@ public class ArcJumpCurve2D : MonoBehaviour
     public AnimationCurve arcCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Sliding Settings")]
-    public float slideSpeed = 1f;                   // скорость скольжения вниз
-    public Transform slideSpawnPoint;               // точка, где будет спавниться префаб
-    public GameObject slidePrefab;                  // префаб для спавна
-    public float spawnInterval = 0.3f;              // как часто спавнить префаб при скольжении
+    public float slideSpeed = 1f;                   
+    public Transform slideSpawnPointLeft;           // точка для левой стены
+    public Transform slideSpawnPointRight;          // точка для правой стены
+    public GameObject slidePrefab;                  
+    public float spawnInterval = 0.3f;              
 
     [Header("Gizmos")]
     public bool showGizmos = true;
@@ -37,6 +38,9 @@ public class ArcJumpCurve2D : MonoBehaviour
     private Queue<GameObject> particlePool;
     private float slideTimer;
 
+    // Активный слайд-партикл
+    private GameObject activeSlideParticle;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -50,6 +54,13 @@ public class ArcJumpCurve2D : MonoBehaviour
             obj.SetActive(false);
             particlePool.Enqueue(obj);
         }
+
+        // Создаём один партикл для скольжения
+        if (slidePrefab != null)
+        {
+            activeSlideParticle = Instantiate(slidePrefab);
+            activeSlideParticle.SetActive(false);
+        }
     }
 
     private void Start()
@@ -61,27 +72,33 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void Update()
     {
-        // Если игрок не прыгает → он скользит вниз
         if (!isJumping)
         {
+            // движение вниз
             transform.position += Vector3.down * slideSpeed * Time.deltaTime;
 
-            // Таймер для спавна
-            slideTimer += Time.deltaTime;
-            if (slideTimer >= spawnInterval)
+            // включаем партикл на правильной стороне
+            if (activeSlideParticle != null)
             {
-                if (slidePrefab != null && slideSpawnPoint != null)
+                Transform spawnPoint = mirror ? slideSpawnPointLeft : slideSpawnPointRight;
+                if (spawnPoint != null)
                 {
-                    Instantiate(slidePrefab, slideSpawnPoint.position, Quaternion.identity);
+                    activeSlideParticle.transform.position = spawnPoint.position;
+                    if (!activeSlideParticle.activeSelf)
+                        activeSlideParticle.SetActive(true);
                 }
-                slideTimer = 0f;
             }
+        }
+        else
+        {
+            // В прыжке → отключаем партикл
+            if (activeSlideParticle != null && activeSlideParticle.activeSelf)
+                activeSlideParticle.SetActive(false);
         }
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
-        // Срабатывает только если игрок в прыжке
         if (!isJumping) return;
 
         if (coll.gameObject.CompareTag("Wall"))
@@ -90,9 +107,7 @@ public class ArcJumpCurve2D : MonoBehaviour
             SpawnParticle(transform.position);
 
             if (Application.isMobilePlatform)
-            {
                 Handheld.Vibrate();
-            }
         }
     }
 
@@ -122,7 +137,7 @@ public class ArcJumpCurve2D : MonoBehaviour
     private void HandleJumpLeft()
     {
         if (isJumping || mirror) return;
-        mirror = true;
+        mirror = true; // левая стена
         _jumpFeedback.PlayFeedbacks();
         DoArcJump();
     }
@@ -130,7 +145,7 @@ public class ArcJumpCurve2D : MonoBehaviour
     private void HandleJumpRight()
     {
         if (isJumping || !mirror) return;
-        mirror = false;
+        mirror = false; // правая стена
         _jumpFeedback.PlayFeedbacks();
         DoArcJump();
     }
