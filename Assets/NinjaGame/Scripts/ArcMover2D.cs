@@ -95,6 +95,8 @@ public class ArcJumpCurve2D : MonoBehaviour
         SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
         SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
+
+        startGame = true;
     }
 
     private void Update()
@@ -264,6 +266,8 @@ public class ArcJumpCurve2D : MonoBehaviour
         SwipeParticles.Instance.OnComboSwipe -= HandleJumpCombo;
         
         gameObject.SetActive(false);
+        
+        GameStartController.Instance.LoseGameController();
     }
 
 
