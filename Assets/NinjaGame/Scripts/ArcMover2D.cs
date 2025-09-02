@@ -81,6 +81,9 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
+        // Срабатывает только если игрок в прыжке
+        if (!isJumping) return;
+
         if (coll.gameObject.CompareTag("Wall"))
         {
             _collisionFeedback.PlayFeedbacks();
