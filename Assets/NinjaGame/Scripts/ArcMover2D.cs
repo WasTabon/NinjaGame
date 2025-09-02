@@ -20,9 +20,9 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     [Header("Sliding Settings")]
     public float slideSpeed = 1f;
-    public Transform slideSpawnPointLeft;   // точка для левой стены
-    public Transform slideSpawnPointRight;  // точка для правой стены
-    public GameObject slidePrefab;          // сам партикл
+    public Transform slideSpawnPointLeft;
+    public Transform slideSpawnPointRight;
+    public GameObject slidePrefab;
 
     [Header("Gizmos")]
     public bool showGizmos = true;
@@ -33,11 +33,22 @@ public class ArcJumpCurve2D : MonoBehaviour
     private float elapsed;
     private bool isJumping;
     private float direction;
+    private float invDuration;
 
-    private Queue<GameObject> particlePool;
+    private Queue<PooledParticle> particlePool;
+    private List<PooledParticle> activeParticles = new List<PooledParticle>();
 
     private GameObject slideParticleLeft;
     private GameObject slideParticleRight;
+    private GameObject currentSlideParticle;
+
+    private class PooledParticle
+    {
+        public GameObject obj;
+        public ParticleSystem ps;
+        public float lifeTime;
+        public float timer;
+    }
 
     private void Awake()
     {
@@ -45,15 +56,22 @@ public class ArcJumpCurve2D : MonoBehaviour
         rb.gravityScale = 0;
 
         // Пул для коллизий
-        particlePool = new Queue<GameObject>();
+        particlePool = new Queue<PooledParticle>();
         for (int i = 0; i < _poolSize; i++)
         {
             GameObject obj = Instantiate(_collisionParticle);
             obj.SetActive(false);
-            particlePool.Enqueue(obj);
+            var ps = obj.GetComponent<ParticleSystem>();
+            particlePool.Enqueue(new PooledParticle
+            {
+                obj = obj,
+                ps = ps,
+                lifeTime = ps.main.duration,
+                timer = 0f
+            });
         }
 
-        // 🔹 При старте игры создаём партиклы на обеих сторонах и выключаем
+        // Создание слайд-партиклов
         if (slidePrefab != null)
         {
             if (slideSpawnPointLeft != null)
@@ -61,7 +79,6 @@ public class ArcJumpCurve2D : MonoBehaviour
                 slideParticleLeft = Instantiate(slidePrefab, slideSpawnPointLeft);
                 slideParticleLeft.SetActive(false);
             }
-
             if (slideSpawnPointRight != null)
             {
                 slideParticleRight = Instantiate(slidePrefab, slideSpawnPointRight);
@@ -79,34 +96,39 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void Update()
     {
+        // Движение вниз и включение слайдов
         if (!isJumping)
         {
-            // движение вниз
             transform.position += Vector3.down * slideSpeed * Time.deltaTime;
 
-            // Включаем нужный партикл
-            if (mirror)
+            GameObject target = mirror ? slideParticleLeft : slideParticleRight;
+            if (currentSlideParticle != target)
             {
-                if (slideParticleLeft != null && !slideParticleLeft.activeSelf)
-                    slideParticleLeft.SetActive(true);
-                if (slideParticleRight != null && slideParticleRight.activeSelf)
-                    slideParticleRight.SetActive(false);
-            }
-            else
-            {
-                if (slideParticleRight != null && !slideParticleRight.activeSelf)
-                    slideParticleRight.SetActive(true);
-                if (slideParticleLeft != null && slideParticleLeft.activeSelf)
-                    slideParticleLeft.SetActive(false);
+                if (currentSlideParticle != null) currentSlideParticle.SetActive(false);
+                if (target != null) target.SetActive(true);
+                currentSlideParticle = target;
             }
         }
         else
         {
-            // В прыжке — отключаем оба
-            if (slideParticleLeft != null && slideParticleLeft.activeSelf)
-                slideParticleLeft.SetActive(false);
-            if (slideParticleRight != null && slideParticleRight.activeSelf)
-                slideParticleRight.SetActive(false);
+            if (currentSlideParticle != null)
+            {
+                currentSlideParticle.SetActive(false);
+                currentSlideParticle = null;
+            }
+        }
+
+        // Обновление активных частиц
+        for (int i = activeParticles.Count - 1; i >= 0; i--)
+        {
+            var p = activeParticles[i];
+            p.timer += Time.deltaTime;
+            if (p.timer >= p.lifeTime)
+            {
+                p.obj.SetActive(false);
+                particlePool.Enqueue(p);
+                activeParticles.RemoveAt(i);
+            }
         }
     }
 
@@ -128,29 +150,19 @@ public class ArcJumpCurve2D : MonoBehaviour
     {
         if (particlePool.Count == 0) return;
 
-        GameObject particle = particlePool.Dequeue();
-        particle.transform.position = position;
-        particle.SetActive(true);
+        var p = particlePool.Dequeue();
+        p.obj.transform.position = position;
+        p.obj.SetActive(true);
+        p.ps.Play();
+        p.timer = 0f;
 
-        var ps = particle.GetComponent<ParticleSystem>();
-        if (ps != null)
-        {
-            ps.Play();
-            StartCoroutine(ReturnToPoolAfterDelay(particle, ps.main.duration));
-        }
-    }
-
-    private System.Collections.IEnumerator ReturnToPoolAfterDelay(GameObject particle, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        particle.SetActive(false);
-        particlePool.Enqueue(particle);
+        activeParticles.Add(p);
     }
 
     private void HandleJumpLeft()
     {
         if (isJumping || mirror) return;
-        mirror = true; // левая стена
+        mirror = true;
         _jumpFeedback.PlayFeedbacks();
         DoArcJump();
     }
@@ -158,7 +170,7 @@ public class ArcJumpCurve2D : MonoBehaviour
     private void HandleJumpRight()
     {
         if (isJumping || !mirror) return;
-        mirror = false; // правая стена
+        mirror = false;
         _jumpFeedback.PlayFeedbacks();
         DoArcJump();
     }
@@ -182,6 +194,7 @@ public class ArcJumpCurve2D : MonoBehaviour
         elapsed = 0f;
         isJumping = true;
         direction = mirror ? -1f : 1f;
+        invDuration = 1f / duration;
     }
 
     private void FixedUpdate()
@@ -189,18 +202,19 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (!isJumping) return;
 
         elapsed += Time.fixedDeltaTime;
-        float tNorm = Mathf.Clamp01(elapsed / duration);
+        float tNorm = elapsed * invDuration;
+        if (tNorm > 1f) tNorm = 1f;
 
         float x = jumpDistance * tNorm * direction;
         float y = arcCurve.Evaluate(tNorm) * jumpHeight;
 
-        Vector3 newPos = startPos + new Vector3(x, y, 0f);
-        rb.MovePosition(newPos);
+        rb.MovePosition(startPos + new Vector3(x, y, 0f));
 
         if (tNorm >= 1f)
             isJumping = false;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (!showGizmos) return;
@@ -221,4 +235,5 @@ public class ArcJumpCurve2D : MonoBehaviour
             prevPoint = nextPoint;
         }
     }
+#endif
 }
