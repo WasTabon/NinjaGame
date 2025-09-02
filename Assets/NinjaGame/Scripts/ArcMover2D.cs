@@ -15,15 +15,14 @@ public class ArcJumpCurve2D : MonoBehaviour
     public float jumpDistance = 3f;
     public float jumpHeight = 2f;
     public float duration = 0.5f;
-    public bool mirror = false;
+    public bool mirror = false; // true = левая стена, false = правая
     public AnimationCurve arcCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Sliding Settings")]
-    public float slideSpeed = 1f;                   
-    public Transform slideSpawnPointLeft;           // точка для левой стены
-    public Transform slideSpawnPointRight;          // точка для правой стены
-    public GameObject slidePrefab;                  
-    public float spawnInterval = 0.3f;              
+    public float slideSpeed = 1f;
+    public Transform slideSpawnPointLeft;   // точка для левой стены
+    public Transform slideSpawnPointRight;  // точка для правой стены
+    public GameObject slidePrefab;          // сам партикл
 
     [Header("Gizmos")]
     public bool showGizmos = true;
@@ -36,10 +35,9 @@ public class ArcJumpCurve2D : MonoBehaviour
     private float direction;
 
     private Queue<GameObject> particlePool;
-    private float slideTimer;
 
-    // Активный слайд-партикл
-    private GameObject activeSlideParticle;
+    private GameObject slideParticleLeft;
+    private GameObject slideParticleRight;
 
     private void Awake()
     {
@@ -55,11 +53,20 @@ public class ArcJumpCurve2D : MonoBehaviour
             particlePool.Enqueue(obj);
         }
 
-        // Создаём один партикл для скольжения
+        // 🔹 При старте игры создаём партиклы на обеих сторонах и выключаем
         if (slidePrefab != null)
         {
-            activeSlideParticle = Instantiate(slidePrefab);
-            activeSlideParticle.SetActive(false);
+            if (slideSpawnPointLeft != null)
+            {
+                slideParticleLeft = Instantiate(slidePrefab, slideSpawnPointLeft);
+                slideParticleLeft.SetActive(false);
+            }
+
+            if (slideSpawnPointRight != null)
+            {
+                slideParticleRight = Instantiate(slidePrefab, slideSpawnPointRight);
+                slideParticleRight.SetActive(false);
+            }
         }
     }
 
@@ -77,23 +84,29 @@ public class ArcJumpCurve2D : MonoBehaviour
             // движение вниз
             transform.position += Vector3.down * slideSpeed * Time.deltaTime;
 
-            // включаем партикл на правильной стороне
-            if (activeSlideParticle != null)
+            // Включаем нужный партикл
+            if (mirror)
             {
-                Transform spawnPoint = mirror ? slideSpawnPointLeft : slideSpawnPointRight;
-                if (spawnPoint != null)
-                {
-                    activeSlideParticle.transform.position = spawnPoint.position;
-                    if (!activeSlideParticle.activeSelf)
-                        activeSlideParticle.SetActive(true);
-                }
+                if (slideParticleLeft != null && !slideParticleLeft.activeSelf)
+                    slideParticleLeft.SetActive(true);
+                if (slideParticleRight != null && slideParticleRight.activeSelf)
+                    slideParticleRight.SetActive(false);
+            }
+            else
+            {
+                if (slideParticleRight != null && !slideParticleRight.activeSelf)
+                    slideParticleRight.SetActive(true);
+                if (slideParticleLeft != null && slideParticleLeft.activeSelf)
+                    slideParticleLeft.SetActive(false);
             }
         }
         else
         {
-            // В прыжке → отключаем партикл
-            if (activeSlideParticle != null && activeSlideParticle.activeSelf)
-                activeSlideParticle.SetActive(false);
+            // В прыжке — отключаем оба
+            if (slideParticleLeft != null && slideParticleLeft.activeSelf)
+                slideParticleLeft.SetActive(false);
+            if (slideParticleRight != null && slideParticleRight.activeSelf)
+                slideParticleRight.SetActive(false);
         }
     }
 
