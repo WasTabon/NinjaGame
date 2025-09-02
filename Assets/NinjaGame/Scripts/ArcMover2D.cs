@@ -141,8 +141,6 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
-        if (!isJumping) return;
-
         if (coll.gameObject.CompareTag("Wall"))
         {
             _collisionFeedback.PlayFeedbacks();
@@ -175,6 +173,7 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void SpawnParticle(Vector3 position)
     {
+        if (!startGame) return;
         if (particlePool.Count == 0) return;
 
         var p = particlePool.Dequeue();
