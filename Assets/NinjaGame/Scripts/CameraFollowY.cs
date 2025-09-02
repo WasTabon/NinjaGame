@@ -1,30 +1,40 @@
 using UnityEngine;
 
-[ExecuteAlways] // Позволяет работать в редакторе
+[ExecuteAlways]
 public class CameraFollowY : MonoBehaviour
 {
     [Header("Target to follow")]
-    public Transform player;          // Игрок, за которым следует камера
-    public Vector3 offset = new Vector3(0, 5, -10); // Настраиваемый оффсет
-    public float smoothSpeed = 5f;    // Скорость сглаживания
+    public Transform player;
+    public Vector3 offset = new Vector3(0, 5, -10);
+    public float smoothSpeed = 5f;
+
+    private float lastCameraY;
+
+    void Start()
+    {
+        lastCameraY = transform.position.y;
+    }
 
     void Update()
     {
         if (player == null) return;
 
-        // Целевая позиция камеры с оффсетом, только Y изменяем по игроку
         Vector3 targetPosition = new Vector3(transform.position.x, player.position.y + offset.y, transform.position.z);
 
-        // Плавное следование камеры
-        transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+        // Камера двигается только вверх
+        if (targetPosition.y > lastCameraY)
+        {
+            transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+            lastCameraY = transform.position.y;
+        }
     }
 
-    // В редакторе, чтобы камера сразу встала на нужную позицию
     void OnValidate()
     {
         if (player == null) return;
 
         Vector3 targetPosition = new Vector3(transform.position.x, player.position.y + offset.y, transform.position.z);
         transform.position = targetPosition;
+        lastCameraY = transform.position.y;
     }
 }

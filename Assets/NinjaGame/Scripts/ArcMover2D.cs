@@ -12,11 +12,17 @@ public class ArcJumpCurve2D : MonoBehaviour
     [SerializeField] private int _poolSize = 5;
 
     [Header("Arc Settings")]
-    public float jumpDistance = 3f;       
-    public float jumpHeight = 2f;         
-    public float duration = 0.5f;         
-    public bool mirror = false;           
+    public float jumpDistance = 3f;
+    public float jumpHeight = 2f;
+    public float duration = 0.5f;
+    public bool mirror = false;
     public AnimationCurve arcCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
+    [Header("Sliding Settings")]
+    public float slideSpeed = 1f;                   // скорость скольжения вниз
+    public Transform slideSpawnPoint;               // точка, где будет спавниться префаб
+    public GameObject slidePrefab;                  // префаб для спавна
+    public float spawnInterval = 0.3f;              // как часто спавнить префаб при скольжении
 
     [Header("Gizmos")]
     public bool showGizmos = true;
@@ -28,15 +34,15 @@ public class ArcJumpCurve2D : MonoBehaviour
     private bool isJumping;
     private float direction;
 
-    // Пул партиклов
     private Queue<GameObject> particlePool;
+    private float slideTimer;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
 
-        // Инициализация пула
+        // Пул для коллизий
         particlePool = new Queue<GameObject>();
         for (int i = 0; i < _poolSize; i++)
         {
@@ -50,8 +56,27 @@ public class ArcJumpCurve2D : MonoBehaviour
     {
         SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
-        
         SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
+    }
+
+    private void Update()
+    {
+        // Если игрок не прыгает → он скользит вниз
+        if (!isJumping)
+        {
+            transform.position += Vector3.down * slideSpeed * Time.deltaTime;
+
+            // Таймер для спавна
+            slideTimer += Time.deltaTime;
+            if (slideTimer >= spawnInterval)
+            {
+                if (slidePrefab != null && slideSpawnPoint != null)
+                {
+                    Instantiate(slidePrefab, slideSpawnPoint.position, Quaternion.identity);
+                }
+                slideTimer = 0f;
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
@@ -76,7 +101,6 @@ public class ArcJumpCurve2D : MonoBehaviour
         particle.transform.position = position;
         particle.SetActive(true);
 
-        // Вернуть в пул после завершения системы частиц
         var ps = particle.GetComponent<ParticleSystem>();
         if (ps != null)
         {
@@ -115,13 +139,11 @@ public class ArcJumpCurve2D : MonoBehaviour
         Debug.Log("Combo Jump");
 
         isJumping = false;
-
         mirror = !mirror;
 
         _jumpFeedback.PlayFeedbacks();
         DoArcJump();
     }
-
 
     public void DoArcJump()
     {
