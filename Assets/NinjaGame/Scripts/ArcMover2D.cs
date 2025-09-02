@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.Feedbacks;
@@ -5,10 +6,13 @@ using MoreMountains.Feedbacks;
 [RequireComponent(typeof(Rigidbody2D))]
 public class ArcJumpCurve2D : MonoBehaviour
 {
+    public bool startGame;
+    
     [SerializeField] private MMF_Player _jumpFeedback;
     [SerializeField] private MMF_Player _collisionFeedback;
 
     [SerializeField] private GameObject _collisionParticle;
+    [SerializeField] private GameObject _deathParticle;   // 🔥 партикл смерти
     [SerializeField] private int _poolSize = 5;
 
     [Header("Arc Settings")]
@@ -20,6 +24,7 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     [Header("Sliding Settings")]
     public float slideSpeed = 1f;
+    private float defaultSlideSpeed; // 🔥 чтобы восстанавливать
     public Transform slideSpawnPointLeft;
     public Transform slideSpawnPointRight;
     public GameObject slidePrefab;
@@ -50,10 +55,12 @@ public class ArcJumpCurve2D : MonoBehaviour
         public float timer;
     }
 
-    private void Awake()
+    public void StartGame()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
+
+        defaultSlideSpeed = slideSpeed;
 
         // Пул для коллизий
         particlePool = new Queue<PooledParticle>();
@@ -71,7 +78,6 @@ public class ArcJumpCurve2D : MonoBehaviour
             });
         }
 
-        // Создание слайд-партиклов
         if (slidePrefab != null)
         {
             if (slideSpawnPointLeft != null)
@@ -85,10 +91,7 @@ public class ArcJumpCurve2D : MonoBehaviour
                 slideParticleRight.SetActive(false);
             }
         }
-    }
-
-    private void Start()
-    {
+        
         SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
         SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
@@ -96,6 +99,8 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void Update()
     {
+        if (!startGame) return;
+        
         // Движение вниз и включение слайдов
         if (!isJumping)
         {
@@ -143,6 +148,26 @@ public class ArcJumpCurve2D : MonoBehaviour
 
             if (Application.isMobilePlatform)
                 Handheld.Vibrate();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D coll)
+    {
+        if (coll.gameObject.CompareTag("Spike") || coll.gameObject.CompareTag("Fire"))
+        {
+            Death();
+        }
+        else if (coll.gameObject.CompareTag("Ice"))
+        {
+            slideSpeed = defaultSlideSpeed * 2f;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D coll)
+    {
+        if (coll.gameObject.CompareTag("Ice"))
+        {
+            slideSpeed = defaultSlideSpeed;
         }
     }
 
@@ -199,6 +224,8 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!startGame) return;
+        
         if (!isJumping) return;
 
         elapsed += Time.fixedDeltaTime;
@@ -213,6 +240,32 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (tNorm >= 1f)
             isJumping = false;
     }
+    
+    public void Death()
+    {
+        if (_deathParticle != null)
+        {
+            Transform spawnPoint = mirror ? slideSpawnPointLeft : slideSpawnPointRight;
+            
+            if (spawnPoint != null)
+            {
+                Quaternion rot = Quaternion.Euler(0f, mirror ? 90f : -90f, 0f);
+
+                GameObject particle = Instantiate(_deathParticle, spawnPoint.position, rot);
+            }
+            else
+            {
+                GameObject particle = Instantiate(_deathParticle, transform.position, Quaternion.identity);
+            }
+        }
+
+        SwipeParticles.Instance.OnSwipeLeft -= HandleJumpLeft;
+        SwipeParticles.Instance.OnSwipeRight -= HandleJumpRight;
+        SwipeParticles.Instance.OnComboSwipe -= HandleJumpCombo;
+        
+        gameObject.SetActive(false);
+    }
+
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

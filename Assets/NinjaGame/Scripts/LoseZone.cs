@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class LoseZone : MonoBehaviour
 {
+    public ArcJumpCurve2D arcJumpCurve2D;
+    
     public Transform player;
     private Camera cam;
 
@@ -16,9 +18,9 @@ public class LoseZone : MonoBehaviour
 
         Vector3 viewPos = cam.WorldToViewportPoint(player.position);
 
-        if (viewPos.y < 0f || viewPos.y > 1f) // за границами по Y
+        if (viewPos.y < 0f || viewPos.y > 1f)
         {
-            Debug.Log("Поражение! Игрок вылетел за пределы камеры.");
+            arcJumpCurve2D.Death();
         }
     }
 }

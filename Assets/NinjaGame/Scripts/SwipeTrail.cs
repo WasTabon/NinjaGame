@@ -118,19 +118,16 @@ public class SwipeParticles : MonoBehaviour
         if (direction == "left")
         {
             OnSwipeLeft?.Invoke();
-            Debug.Log("Swipe Left");
         }
         else if (direction == "right")
         {
             OnSwipeRight?.Invoke();
-            Debug.Log("Swipe Right");
         }
 
         // проверка на комбо свайп
         if (lastSwipe != "" && lastSwipe != direction)
         {
             OnComboSwipe?.Invoke();
-            Debug.Log("Combo Swipe!");
             lastSwipe = "";
             if (comboRoutine != null)
             {

@@ -64,10 +64,6 @@ public class WallSpawner : MonoBehaviour
         {
             // Берём из пула или создаём новую стену
             GameObject wall = GetFromPool(wallOption.wallPrefab);
-            foreach (Transform child in wall.transform)
-            {
-                child.gameObject.SetActive(false);
-            }
             wall.transform.position = new Vector3(wallOption.wallPrefab.transform.position.x, yPos, 0f);
             wall.SetActive(true);
 

@@ -7,6 +7,10 @@ TagManager:
   - Missile
   - Target
   - Wall
+  - Coin
+  - Spike
+  - Fire
+  - Ice
   layers:
   - Default
   - TransparentFX
