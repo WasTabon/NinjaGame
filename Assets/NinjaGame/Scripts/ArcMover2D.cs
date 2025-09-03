@@ -55,6 +55,8 @@ public class ArcJumpCurve2D : MonoBehaviour
     private GameObject slideParticleRight;
     private GameObject currentSlideParticle;
 
+    private GameObject collGameobject;
+
     private class PooledParticle
     {
         public GameObject obj;
@@ -168,6 +170,7 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (coll.gameObject.CompareTag("Spike") || coll.gameObject.CompareTag("Fire"))
         {
             Death();
+            collGameobject = coll.gameObject;
         }
         else if (coll.gameObject.CompareTag("Ice"))
         {
@@ -264,6 +267,8 @@ public class ArcJumpCurve2D : MonoBehaviour
     
     public void Death()
     {
+        startGame = false;
+        
         if (_deathParticle != null)
         {
             Transform spawnPoint = mirror ? slideSpawnPointLeft : slideSpawnPointRight;
@@ -289,6 +294,19 @@ public class ArcJumpCurve2D : MonoBehaviour
         MusicController.Instance.PlaySpecificSound(deathSound);
         
         GameStartController.Instance.LoseGameController();
+    }
+
+    public void Revive()
+    {
+        collGameobject.SetActive(false);
+        
+        gameObject.SetActive(true);
+        
+        SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
+        SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
+        SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
+        
+        startGame = true;
     }
 
 

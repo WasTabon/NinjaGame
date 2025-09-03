@@ -1,20 +1,26 @@
 using UnityEngine;
 using TMPro;
-using System.Globalization; // обязательно!
+using System.Globalization;
 
 public class MetersCount : MonoBehaviour
 {
+    public static MetersCount Instance;
+
     [Header("Player Reference")]
     [SerializeField] private Transform player;
 
-    [Header("UI")]
+    [Header("UI (только текущий счет во время игры)")]
     [SerializeField] private TextMeshProUGUI metersText;
 
     private float startY;
     private float maxY;
     private float metersTraveled;
-
     private string cachedText;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -34,7 +40,6 @@ public class MetersCount : MonoBehaviour
         {
             maxY = currentY;
             metersTraveled = maxY - startY;
-
             UpdateText(metersTraveled);
         }
     }
@@ -48,5 +53,10 @@ public class MetersCount : MonoBehaviour
             metersText.text = newText;
             cachedText = newText;
         }
+    }
+
+    public float GetCurrentMeters()
+    {
+        return metersTraveled;
     }
 }

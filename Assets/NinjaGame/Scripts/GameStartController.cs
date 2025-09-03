@@ -15,11 +15,11 @@ public class GameStartController : MonoBehaviour
     public ArcJumpCurve2D arcJumpCurve2D;
 
     [Header("Game Lose")] 
-    public CanvasGroup looseBackground;  // фон лучше через CanvasGroup
+    public CanvasGroup looseBackground;
     public RectTransform loosePanel;
     public RectTransform restartButton;
-    public TextMeshProUGUI oldMetersText;
-    public TextMeshProUGUI metersText;   // текст, куда выводим финальный результат
+    public TextMeshProUGUI recordText;   // новый TMP для рекорда
+    public TextMeshProUGUI currentText;  // новый TMP для текущих метров
 
     private void Awake()
     {
@@ -41,34 +41,51 @@ public class GameStartController : MonoBehaviour
 
     public void LoseGameController()
     {
-        float finalValue = ParseMeters(oldMetersText.text);
+        float currentValue = MetersCount.Instance.GetCurrentMeters();
+        float bestRecord = PlayerPrefs.GetFloat("BestRecord", 0f);
+
+        // если перебили рекорд → сохранить
+        if (currentValue > bestRecord)
+        {
+            bestRecord = currentValue;
+            PlayerPrefs.SetFloat("BestRecord", bestRecord);
+            PlayerPrefs.Save();
+        }
+
+        // обновляем тексты
+        recordText.text = "RECORD " + bestRecord.ToString("F2", CultureInfo.InvariantCulture) + "m";
+        currentText.text = "CURRENT 0.00m";
 
         // создаём последовательность
         Sequence seq = DOTween.Sequence();
 
-        // 1. убираем старый текст (alpha = 0 и scale вниз)
-        seq.Append(oldMetersText.DOFade(0f, 0.3f));
-        seq.Join(oldMetersText.rectTransform.DOScale(0.7f, 0.3f));
-
-        // 2. включаем фон (alpha = 1)
+        // 1. фон
         looseBackground.alpha = 0;
         looseBackground.gameObject.SetActive(true);
         seq.Append(looseBackground.DOFade(1f, 0.4f));
 
-        // 3. показываем панель
+        // 2. панель
         loosePanel.localScale = Vector3.zero;
         seq.Append(loosePanel.DOScale(1f, 0.5f).SetEase(Ease.OutBack));
 
-        // 4. считаем текст от 0 до finalValue
-        metersText.text = "RECORD 0m";
+        // 3. показать recordText (без анимации цифр, только альфа и scale)
+        recordText.alpha = 0;
+        recordText.rectTransform.localScale = Vector3.zero;
+        seq.Append(recordText.DOFade(1f, 0.3f));
+        seq.Join(recordText.rectTransform.DOScale(1f, 0.3f).SetEase(Ease.OutBack));
+
+        // 4. анимация currentText от 0 до currentValue
         float displayedValue = 0f;
+        currentText.alpha = 1f;
+        currentText.rectTransform.localScale = Vector3.zero;
+        seq.Append(currentText.rectTransform.DOScale(1f, 0.4f).SetEase(Ease.OutBack));
         seq.Append(DOTween.To(() => displayedValue, x =>
         {
             displayedValue = x;
-            metersText.text = "RECORD " + displayedValue.ToString("F2", CultureInfo.InvariantCulture) + "m";
-        }, finalValue, 1f).SetEase(Ease.Linear));
+            currentText.text = "CURRENT " + displayedValue.ToString("F2", CultureInfo.InvariantCulture) + "m";
+        }, currentValue, 1f).SetEase(Ease.Linear));
 
-        // 5. показываем restartButton
+        // 5. restartButton
         restartButton.localScale = Vector3.zero;
         seq.Append(restartButton.DOScale(1f, 0.4f).SetEase(Ease.OutBack));
     }
@@ -76,18 +93,5 @@ public class GameStartController : MonoBehaviour
     public void RestartScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-    
-    private float ParseMeters(string text)
-    {
-        if (string.IsNullOrEmpty(text)) return 0f;
-
-        // убираем "m" и парсим
-        string numeric = text.Replace("m", "").Trim();
-
-        if (float.TryParse(numeric, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
-            return result;
-
-        return 0f;
     }
 }

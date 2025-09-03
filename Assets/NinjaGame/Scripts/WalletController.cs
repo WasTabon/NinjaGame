@@ -5,6 +5,13 @@ public class WalletController : MonoBehaviour
 {
     public static WalletController Instance;
 
+    public ArcJumpCurve2D player;
+
+    public GameObject buyPanel;
+    
+    public GameObject revivePanel;
+    public GameObject losePanel;
+    
     public TextMeshProUGUI coinText;
     
     private int _coin;
@@ -29,5 +36,20 @@ public class WalletController : MonoBehaviour
     private void Start()
     {
         _coin = PlayerPrefs.GetInt("Coin", 0);
+    }
+
+    public void BuyRevive()
+    {
+        if (_coin >= 50)
+        {
+            _coin -= 50;
+            player.Revive();
+            losePanel.SetActive(false);
+            revivePanel.SetActive(false);
+        }
+        else
+        {
+            buyPanel.SetActive(true);
+        }
     }
 }   
