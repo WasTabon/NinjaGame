@@ -2,10 +2,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MoreMountains.Feedbacks;
+using Unity.Mathematics;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class ArcJumpCurve2D : MonoBehaviour
 {
+    public AudioClip jumpSound;
+    public AudioClip wallSound;
+    public AudioClip deathSound;
+    public AudioClip coinSound;
+
+    public GameObject coinParticle;
+    
     public bool startGame;
     
     [SerializeField] private MMF_Player _jumpFeedback;
@@ -141,6 +149,8 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
+        if (!startGame) return;
+        
         if (coll.gameObject.CompareTag("Wall"))
         {
             _collisionFeedback.PlayFeedbacks();
@@ -148,6 +158,8 @@ public class ArcJumpCurve2D : MonoBehaviour
 
             if (Application.isMobilePlatform)
                 Handheld.Vibrate();
+            
+            MusicController.Instance.PlaySpecificSound(wallSound);
         }
     }
 
@@ -160,6 +172,13 @@ public class ArcJumpCurve2D : MonoBehaviour
         else if (coll.gameObject.CompareTag("Ice"))
         {
             slideSpeed = defaultSlideSpeed * 2f;
+        }
+        else if (coll.gameObject.CompareTag("Coin"))
+        {
+            Instantiate(coinParticle, coll.transform.position, Quaternion.identity);
+            coll.gameObject.SetActive(false);
+            MusicController.Instance.PlaySpecificSound(coinSound, 1f);
+            WalletController.Instance.Coin++;
         }
     }
 
@@ -221,6 +240,7 @@ public class ArcJumpCurve2D : MonoBehaviour
         isJumping = true;
         direction = mirror ? -1f : 1f;
         invDuration = 1f / duration;
+        MusicController.Instance.PlaySpecificSound(jumpSound);
     }
 
     private void FixedUpdate()
@@ -265,6 +285,8 @@ public class ArcJumpCurve2D : MonoBehaviour
         SwipeParticles.Instance.OnComboSwipe -= HandleJumpCombo;
         
         gameObject.SetActive(false);
+        
+        MusicController.Instance.PlaySpecificSound(deathSound);
         
         GameStartController.Instance.LoseGameController();
     }
