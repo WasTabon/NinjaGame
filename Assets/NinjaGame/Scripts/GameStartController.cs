@@ -8,6 +8,9 @@ using UnityEngine.SceneManagement;
 public class GameStartController : MonoBehaviour
 {
     public static GameStartController Instance;
+
+    public AudioClip music;
+    public AudioLowPassFilter filter;
     
     [Header("Game Start")]
     public RectTransform panel;
@@ -17,6 +20,7 @@ public class GameStartController : MonoBehaviour
     [Header("Game Lose")] 
     public CanvasGroup looseBackground;
     public RectTransform loosePanel;
+    public RectTransform reviveButton;   // 🔹 новая кнопка
     public RectTransform restartButton;
     public TextMeshProUGUI recordText;   // новый TMP для рекорда
     public TextMeshProUGUI currentText;  // новый TMP для текущих метров
@@ -37,10 +41,16 @@ public class GameStartController : MonoBehaviour
             panel.gameObject.SetActive(false);
             arcJumpCurve2D.StartGame();
         });
+
+        filter.cutoffFrequency = 22000;
+        MusicController.Instance._audioSourceMusic.clip = music;
+        MusicController.Instance._audioSourceMusic.Play();
     }
 
     public void LoseGameController()
     {
+        filter.cutoffFrequency = 300;
+        
         float currentValue = MetersCount.Instance.GetCurrentMeters();
         float bestRecord = PlayerPrefs.GetFloat("BestRecord", 0f);
 
@@ -68,7 +78,7 @@ public class GameStartController : MonoBehaviour
         loosePanel.localScale = Vector3.zero;
         seq.Append(loosePanel.DOScale(1f, 0.5f).SetEase(Ease.OutBack));
 
-        // 3. показать recordText (без анимации цифр, только альфа и scale)
+        // 3. показать recordText
         recordText.alpha = 0;
         recordText.rectTransform.localScale = Vector3.zero;
         seq.Append(recordText.DOFade(1f, 0.3f));
@@ -85,7 +95,11 @@ public class GameStartController : MonoBehaviour
             currentText.text = "CURRENT " + displayedValue.ToString("F2", CultureInfo.InvariantCulture) + "m";
         }, currentValue, 1f).SetEase(Ease.Linear));
 
-        // 5. restartButton
+        // 5. reviveButton
+        reviveButton.localScale = Vector3.zero;
+        seq.Append(reviveButton.DOScale(1f, 0.4f).SetEase(Ease.OutBack));
+
+        // 6. restartButton
         restartButton.localScale = Vector3.zero;
         seq.Append(restartButton.DOScale(1f, 0.4f).SetEase(Ease.OutBack));
     }
