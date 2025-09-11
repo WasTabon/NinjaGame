@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using MoreMountains.Feedbacks;
 using Unity.Mathematics;
@@ -182,6 +183,23 @@ public class ArcJumpCurve2D : MonoBehaviour
             coll.gameObject.SetActive(false);
             MusicController.Instance.PlaySpecificSound(coinSound, 1f);
             WalletController.Instance.Coin++;
+        }
+        else if (coll.gameObject.CompareTag("Portal"))
+        {
+            coll.gameObject.SetActive(false);
+            Camera mainCam = Camera.main;
+            if (mainCam != null)
+            {
+                Vector3 currentRotation = mainCam.transform.eulerAngles;
+                float targetZ = Mathf.Approximately(currentRotation.z, 0f) ? 180f : 0f;
+
+                // Плавный поворот камеры за 0.5 секунды
+                mainCam.transform.DORotate(
+                    new Vector3(currentRotation.x, currentRotation.y, targetZ),
+                    0.5f,
+                    RotateMode.FastBeyond360
+                );
+            }
         }
     }
 

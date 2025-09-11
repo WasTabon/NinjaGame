@@ -11,6 +11,7 @@ TagManager:
   - Spike
   - Fire
   - Ice
+  - Portal
   layers:
   - Default
   - TransparentFX
