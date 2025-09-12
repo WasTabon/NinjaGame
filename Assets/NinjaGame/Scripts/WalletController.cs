@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -5,6 +6,8 @@ public class WalletController : MonoBehaviour
 {
     public static WalletController Instance;
 
+    public TextMeshProUGUI _cointText;
+    
     public ArcJumpCurve2D player;
 
     public GameObject buyPanel;
@@ -36,6 +39,14 @@ public class WalletController : MonoBehaviour
     private void Start()
     {
         _coin = PlayerPrefs.GetInt("Coin", 0);
+    }
+
+    private void Update()
+    {
+        if (coinText.gameObject.activeSelf)
+        {
+            coinText.text = $"{_coin.ToString()} <sprite=0>";
+        }
     }
 
     public void BuyRevive()
