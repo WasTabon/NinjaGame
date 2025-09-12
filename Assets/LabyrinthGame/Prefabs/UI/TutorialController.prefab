@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1997883759828205345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5458851231605203012}
+  - component: {fileID: 657709321103453398}
+  m_Layer: 0
+  m_Name: TutorialController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5458851231605203012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997883759828205345}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &657709321103453398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997883759828205345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6038e2c774a251409d00394c759b24e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialPanel: {fileID: 0}
+  tutorialText: {fileID: 0}
+  nextButton: {fileID: 0}
+  nextButtonText: {fileID: 0}
+  tutorialSteps:
+  - In this game, your goal is to explore mazes and collect magic orbs.
+  - There are 3 orbs in total on each level. If you collect them all, you move on
+    to the next level. If you miss even one, you lose and must start over.
+  - Each level has several mazes, but you only get a limited number of keys. The
+    number of keys is always smaller than the number of mazes.
+  - "To enter a maze, you need a key with the same number as the maze\u2019s number.
+    For example, if a maze has the number 3, you need a key with the number 3."
+  - "If the numbers don\u2019t match, you can change the number on your key using
+    runes. You get 2 runes per level, and each rune can increase or decrease a key\u2019s
+    number by 1."
+  - "Be careful! If you use your last key to open the wrong maze and the orbs are
+    hidden elsewhere, you\u2019ll lose the game."
+  - Along the way, you can also find coins inside the mazes. Use them to upgrade
+    your home.
+  - "Choose your paths wisely \u2014 one wrong key can cost you everything."
