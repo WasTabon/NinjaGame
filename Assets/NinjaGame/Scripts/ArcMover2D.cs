@@ -285,6 +285,8 @@ public class ArcJumpCurve2D : MonoBehaviour
     
     public void Death()
     {
+        if (!startGame) 
+            return;
         startGame = false;
         
         if (_deathParticle != null)

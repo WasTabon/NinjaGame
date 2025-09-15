@@ -6,6 +6,8 @@ public class WalletController : MonoBehaviour
 {
     public static WalletController Instance;
 
+    public AudioLowPassFilter filter;
+    
     public TextMeshProUGUI _cointText;
     
     public ArcJumpCurve2D player;
@@ -57,6 +59,7 @@ public class WalletController : MonoBehaviour
             player.Revive();
             losePanel.SetActive(false);
             revivePanel.SetActive(false);
+            filter.cutoffFrequency = 22000;
         }
         else
         {

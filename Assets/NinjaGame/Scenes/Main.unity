@@ -2710,7 +2710,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 677853365}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1989909372}
+        m_TargetAssemblyTypeName: MusicController, Assembly-CSharp
+        m_MethodName: PlayClickSound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 949851015}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &677853365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5623,6 +5647,10 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1737572123460851674, guid: bdc425bb53608f847890f55c857e1e30, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2.5063477
+      objectReference: {fileID: 0}
     - target: {fileID: 1938343125336889134, guid: bdc425bb53608f847890f55c857e1e30, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5883,6 +5911,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32da27e7b0ed9c4cba0d1f218b7cea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  filter: {fileID: 1989909374}
   _cointText: {fileID: 1777748877}
   player: {fileID: 274196125}
   buyPanel: {fileID: 413446258}
@@ -7651,7 +7680,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.27881482, y: 0.38700002}
   m_AnchorMax: {x: 0.27881482, y: 0.38700002}
-  m_AnchoredPosition: {x: -1.2219849, y: 143}
+  m_AnchoredPosition: {x: -1.2220459, y: 143}
   m_SizeDelta: {x: 406.7873, y: 166.6653}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1811971600
