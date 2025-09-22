@@ -2314,6 +2314,15 @@ MonoBehaviour:
   - "There\u2019s also a special jump: instead of jumping to the opposite wall, you
     can jump in place.\nTo do this, quickly swipe twice in opposite directions."
   - "For example, if you\u2019re on the right wall, swipe left and then quickly right."
+  - 'There are also portals in the game.
+
+    When you enter one, the camera flips
+    and your controls get inverted.'
+  - 'A swipe to the right will count as a swipe to the left.
+
+    And a swipe to
+    the left will count as a swipe to the right.'
+  - This effect stays active until you pass through the next portal.
   - Good luck!
 --- !u!1 &587637032
 GameObject:
