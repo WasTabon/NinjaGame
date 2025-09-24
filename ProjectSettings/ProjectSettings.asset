@@ -897,7 +897,8 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Purchasing: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -919,7 +920,13 @@ PlayerSettings:
   windowsGamepadBackendHint: 0
   cloudProjectId: acceaf75-b0a7-494c-8832-18625e17ae61
   framebufferDepthMemorylessMode: 0
-  qualitySettingsNames: []
+  qualitySettingsNames:
+  - Very Low
+  - Low
+  - Medium
+  - High
+  - Very High
+  - Ultra
   projectName: ninjiaGame
   organizationId: unity_7uso5rss2sjfeq
   cloudEnabled: 0
