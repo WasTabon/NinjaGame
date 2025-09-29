@@ -2090,6 +2090,97 @@ Transform:
   - {fileID: 330490678}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &512613968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 512613969}
+  - component: {fileID: 512613971}
+  - component: {fileID: 512613970}
+  - component: {fileID: 512613972}
+  m_Layer: 5
+  m_Name: Hand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &512613969
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512613968}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1844008526}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.68100005}
+  m_AnchorMax: {x: 0.5, y: 0.68100005}
+  m_AnchoredPosition: {x: -184.84, y: 0.000030517578}
+  m_SizeDelta: {x: 200, y: 200}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &512613970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512613968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 1664ad7d8949a9b4f851292332dbbbb0, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &512613971
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512613968}
+  m_CullTransparentMesh: 1
+--- !u!114 &512613972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512613968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93560e52a8d460748b30806c06024112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 512613969}
+  moveDistance: 500
+  duration: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2307,23 +2398,45 @@ MonoBehaviour:
   nextButton: {fileID: 1395175719}
   nextButtonText: {fileID: 1395175718}
   tutorialSteps:
-  - Swipe left or right to jump between the walls and climb higher.
-  - "Watch out for traps along the way \u2014 try to avoid them!"
-  - "You\u2019ll also find coins on the level. Collect them - later you can spend
-    coins to buy revives."
-  - "There\u2019s also a special jump: instead of jumping to the opposite wall, you
-    can jump in place.\nTo do this, quickly swipe twice in opposite directions."
-  - "For example, if you\u2019re on the right wall, swipe left and then quickly right."
-  - 'There are also portals in the game.
+  - stepText: 'In this game, you need to swipe left or right to move up along the
+      walls.
 
-    When you enter one, the camera flips
-    and your controls get inverted.'
-  - 'A swipe to the right will count as a swipe to the left.
+      Watch out for traps on the way and try to avoid them!'
+    objectsToActivate:
+    - {fileID: 2096824300}
+    objectsToDeactivate: []
+  - stepText: There are also coins on the level. Collect them to unlock revives later.
+    objectsToActivate: []
+    objectsToDeactivate:
+    - {fileID: 2096824300}
+  - stepText: 'You can also jump in place instead of moving from wall to wall.
 
-    And a swipe to
-    the left will count as a swipe to the right.'
-  - This effect stays active until you pass through the next portal.
-  - Good luck!
+      To
+      do this, quickly swipe twice in opposite directions.'
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: "For example, if you\u2019re on the right wall, swipe left, then quickly
+      swipe right."
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: 'There are also portals in the game.
+
+      When you enter one, the
+      camera flips and your controls are inverted.'
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: 'A swipe to the right will count as a swipe to the left,
+
+      and
+      a swipe to the left will count as a swipe to the right.'
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: This effect lasts until you pass through the next portal.
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: Good luck!
+    objectsToActivate: []
+    objectsToDeactivate: []
 --- !u!1 &587637032
 GameObject:
   m_ObjectHideFlags: 0
@@ -5813,6 +5926,13 @@ PrefabInstance:
       value: 41
       objectReference: {fileID: 0}
     - target: {fileID: 7157013633834799422, guid: bdc425bb53608f847890f55c857e1e30, type: 3}
+      propertyPath: m_text
+      value: 'In this game, you need to swipe left or right to move up along the
+        walls.
+
+        Watch out for traps on the way and try to avoid them!'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7157013633834799422, guid: bdc425bb53608f847890f55c857e1e30, type: 3}
       propertyPath: m_fontAsset
       value: 
       objectReference: {fileID: 11400000, guid: 2245989f567e60747b6ef60cc978d906, type: 2}
@@ -5830,7 +5950,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1938343125336889134, guid: bdc425bb53608f847890f55c857e1e30, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 2096824301}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bdc425bb53608f847890f55c857e1e30, type: 3}
 --- !u!224 &1395175716 stripped
@@ -7826,6 +7949,7 @@ RectTransform:
   m_Children:
   - {fileID: 1626493222}
   - {fileID: 1713532621}
+  - {fileID: 512613969}
   m_Father: {fileID: 339035124}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8742,6 +8866,97 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2025618075}
+  m_CullTransparentMesh: 1
+--- !u!1 &2096824300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2096824301}
+  - component: {fileID: 2096824304}
+  - component: {fileID: 2096824303}
+  - component: {fileID: 2096824302}
+  m_Layer: 5
+  m_Name: Hand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2096824301
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096824300}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1395175716}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.68100005}
+  m_AnchorMax: {x: 0.5, y: 0.68100005}
+  m_AnchoredPosition: {x: -190, y: -933}
+  m_SizeDelta: {x: 200, y: 200}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2096824302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096824300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93560e52a8d460748b30806c06024112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 2096824301}
+  moveDistance: 500
+  duration: 1
+--- !u!114 &2096824303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096824300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 1664ad7d8949a9b4f851292332dbbbb0, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2096824304
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096824300}
   m_CullTransparentMesh: 1
 --- !u!1 &2102602576 stripped
 GameObject:
