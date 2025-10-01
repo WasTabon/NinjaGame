@@ -941,6 +941,7 @@ MonoBehaviour:
   _poolSize: 10
   jumpDistance: 3
   jumpHeight: 2.58
+  highJumpMultiplier: 1.5
   duration: 0.25
   mirror: 0
   arcCurve:
@@ -2125,7 +2126,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.68100005}
   m_AnchorMax: {x: 0.5, y: 0.68100005}
-  m_AnchoredPosition: {x: -184.84, y: 0.000030517578}
+  m_AnchoredPosition: {x: -184.84, y: 0}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &512613970
@@ -2425,10 +2426,11 @@ MonoBehaviour:
       camera flips and your controls are inverted.'
     objectsToActivate: []
     objectsToDeactivate: []
-  - stepText: 'A swipe to the right will count as a swipe to the left,
-
-      and
-      a swipe to the left will count as a swipe to the right.'
+  - stepText: "If you\u2019re on the right wall, swipe down to perform a high jump.\nIf
+      you\u2019re on the left wall, swipe up to perform a high jump."
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: Good luck!
     objectsToActivate: []
     objectsToDeactivate: []
   - stepText: This effect lasts until you pass through the next portal.

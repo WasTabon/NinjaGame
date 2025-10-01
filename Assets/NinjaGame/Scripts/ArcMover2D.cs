@@ -27,7 +27,7 @@ public class ArcJumpCurve2D : MonoBehaviour
     [Header("Arc Settings")]
     public float jumpDistance = 3f;
     public float jumpHeight = 2f;
-    public float highJumpMultiplier = 2f;
+    public float highJumpMultiplier = 1.5f;
     public float duration = 0.5f;
     public bool mirror = false;
     public AnimationCurve arcCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -70,10 +70,15 @@ public class ArcJumpCurve2D : MonoBehaviour
 
     public void StartGame()
     {
+        startGame = true;
+        isJumping = false;
+        elapsed = 0f;
+        
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
 
         defaultSlideSpeed = slideSpeed;
+        slideSpeed = defaultSlideSpeed;
 
         particlePool = new Queue<PooledParticle>();
         for (int i = 0; i < _poolSize; i++)
@@ -109,8 +114,6 @@ public class ArcJumpCurve2D : MonoBehaviour
         SwipeParticles.Instance.OnSwipeDown += HandleJumpDown;
         SwipeParticles.Instance.OnSwipeUp += HandleJumpUp;
         SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
-
-        startGame = true;
     }
 
     private void Update()
