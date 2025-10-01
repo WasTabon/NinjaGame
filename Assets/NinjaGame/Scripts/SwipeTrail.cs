@@ -13,12 +13,14 @@ public class SwipeParticles : MonoBehaviour
     public float zDistance = 10f;
 
     [Header("Swipe Settings")]
-    public float swipeThreshold = 50f; // минимальная дистанция для свайпа
-    public float comboTime = 0.15f;     // время для комбо свайпа
+    public float swipeThreshold = 50f;
+    public float comboTime = 0.15f;
 
     public event Action OnSwipeLeft;
     public event Action OnSwipeRight;
-    public event Action OnComboSwipe; // если два противоположных свайпа подряд
+    public event Action OnSwipeUp;
+    public event Action OnSwipeDown;
+    public event Action OnComboSwipe;
 
     private bool isDragging = false;
     private ParticleSystem.EmissionModule emission;
@@ -101,12 +103,19 @@ public class SwipeParticles : MonoBehaviour
 
         if (!swipeDetected && delta.magnitude > swipeThreshold)
         {
-            if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y)) // свайпы по X
+            if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
             {
                 if (delta.x > 0)
                     HandleSwipe("right");
                 else
                     HandleSwipe("left");
+            }
+            else
+            {
+                if (delta.y > 0)
+                    HandleSwipe("up");
+                else
+                    HandleSwipe("down");
             }
         }
     }
@@ -123,8 +132,15 @@ public class SwipeParticles : MonoBehaviour
         {
             OnSwipeRight?.Invoke();
         }
+        else if (direction == "up")
+        {
+            OnSwipeUp?.Invoke();
+        }
+        else if (direction == "down")
+        {
+            OnSwipeDown?.Invoke();
+        }
 
-        // проверка на комбо свайп
         if (lastSwipe != "" && lastSwipe != direction)
         {
             OnComboSwipe?.Invoke();

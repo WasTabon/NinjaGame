@@ -21,19 +21,20 @@ public class ArcJumpCurve2D : MonoBehaviour
     [SerializeField] private MMF_Player _collisionFeedback;
 
     [SerializeField] private GameObject _collisionParticle;
-    [SerializeField] private GameObject _deathParticle;   // 🔥 партикл смерти
+    [SerializeField] private GameObject _deathParticle;
     [SerializeField] private int _poolSize = 5;
 
     [Header("Arc Settings")]
     public float jumpDistance = 3f;
     public float jumpHeight = 2f;
+    public float highJumpMultiplier = 2f;
     public float duration = 0.5f;
-    public bool mirror = false; // true = левая стена, false = правая
+    public bool mirror = false;
     public AnimationCurve arcCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Sliding Settings")]
     public float slideSpeed = 1f;
-    private float defaultSlideSpeed; // 🔥 чтобы восстанавливать
+    private float defaultSlideSpeed;
     public Transform slideSpawnPointLeft;
     public Transform slideSpawnPointRight;
     public GameObject slidePrefab;
@@ -48,6 +49,7 @@ public class ArcJumpCurve2D : MonoBehaviour
     private bool isJumping;
     private float direction;
     private float invDuration;
+    private float currentJumpHeight;
 
     private Queue<PooledParticle> particlePool;
     private List<PooledParticle> activeParticles = new List<PooledParticle>();
@@ -73,7 +75,6 @@ public class ArcJumpCurve2D : MonoBehaviour
 
         defaultSlideSpeed = slideSpeed;
 
-        // Пул для коллизий
         particlePool = new Queue<PooledParticle>();
         for (int i = 0; i < _poolSize; i++)
         {
@@ -105,6 +106,8 @@ public class ArcJumpCurve2D : MonoBehaviour
         
         SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
+        SwipeParticles.Instance.OnSwipeDown += HandleJumpDown;
+        SwipeParticles.Instance.OnSwipeUp += HandleJumpUp;
         SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
 
         startGame = true;
@@ -114,7 +117,6 @@ public class ArcJumpCurve2D : MonoBehaviour
     {
         if (!startGame) return;
         
-        // Движение вниз и включение слайдов
         if (!isJumping)
         {
             transform.position += Vector3.down * slideSpeed * Time.deltaTime;
@@ -136,7 +138,6 @@ public class ArcJumpCurve2D : MonoBehaviour
             }
         }
 
-        // Обновление активных частиц
         for (int i = activeParticles.Count - 1; i >= 0; i--)
         {
             var p = activeParticles[i];
@@ -193,7 +194,6 @@ public class ArcJumpCurve2D : MonoBehaviour
                 Vector3 currentRotation = mainCam.transform.eulerAngles;
                 float targetZ = Mathf.Approximately(currentRotation.z, 0f) ? 180f : 0f;
 
-                // Плавный поворот камеры за 0.5 секунды
                 mainCam.transform.DORotate(
                     new Vector3(currentRotation.x, currentRotation.y, targetZ),
                     0.5f,
@@ -230,7 +230,7 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (isJumping || mirror) return;
         mirror = true;
         _jumpFeedback.PlayFeedbacks();
-        DoArcJump();
+        DoArcJump(false);
     }
 
     private void HandleJumpRight()
@@ -238,7 +238,23 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (isJumping || !mirror) return;
         mirror = false;
         _jumpFeedback.PlayFeedbacks();
-        DoArcJump();
+        DoArcJump(false);
+    }
+
+    private void HandleJumpDown()
+    {
+        if (isJumping || mirror) return;
+        mirror = true;
+        _jumpFeedback.PlayFeedbacks();
+        DoArcJump(true);
+    }
+
+    private void HandleJumpUp()
+    {
+        if (isJumping || !mirror) return;
+        mirror = false;
+        _jumpFeedback.PlayFeedbacks();
+        DoArcJump(true);
     }
 
     private void HandleJumpCombo()
@@ -251,16 +267,17 @@ public class ArcJumpCurve2D : MonoBehaviour
         mirror = !mirror;
 
         _jumpFeedback.PlayFeedbacks();
-        DoArcJump();
+        DoArcJump(false);
     }
 
-    public void DoArcJump()
+    public void DoArcJump(bool isHighJump = false)
     {
         startPos = transform.position;
         elapsed = 0f;
         isJumping = true;
         direction = mirror ? -1f : 1f;
         invDuration = 1f / duration;
+        currentJumpHeight = isHighJump ? jumpHeight * highJumpMultiplier : jumpHeight;
         MusicController.Instance.PlaySpecificSound(jumpSound);
     }
 
@@ -275,7 +292,7 @@ public class ArcJumpCurve2D : MonoBehaviour
         if (tNorm > 1f) tNorm = 1f;
 
         float x = jumpDistance * tNorm * direction;
-        float y = arcCurve.Evaluate(tNorm) * jumpHeight;
+        float y = arcCurve.Evaluate(tNorm) * currentJumpHeight;
 
         rb.MovePosition(startPos + new Vector3(x, y, 0f));
 
@@ -307,6 +324,8 @@ public class ArcJumpCurve2D : MonoBehaviour
 
         SwipeParticles.Instance.OnSwipeLeft -= HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight -= HandleJumpRight;
+        SwipeParticles.Instance.OnSwipeDown -= HandleJumpDown;
+        SwipeParticles.Instance.OnSwipeUp -= HandleJumpUp;
         SwipeParticles.Instance.OnComboSwipe -= HandleJumpCombo;
         
         gameObject.SetActive(false);
@@ -324,6 +343,8 @@ public class ArcJumpCurve2D : MonoBehaviour
         
         SwipeParticles.Instance.OnSwipeLeft += HandleJumpLeft;
         SwipeParticles.Instance.OnSwipeRight += HandleJumpRight;
+        SwipeParticles.Instance.OnSwipeDown += HandleJumpDown;
+        SwipeParticles.Instance.OnSwipeUp += HandleJumpUp;
         SwipeParticles.Instance.OnComboSwipe += HandleJumpCombo;
         
         startGame = true;
