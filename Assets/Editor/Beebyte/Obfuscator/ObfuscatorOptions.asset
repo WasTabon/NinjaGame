@@ -26,8 +26,8 @@ MonoBehaviour:
   obfuscateMarkerInDecimal: 94
   RSAKeyLength: 1024
   addFakeCode: 1
-  minFalseMethodsPerClass: 150
-  maxFalseMethodsPerClass: 500
+  minFalseMethodsPerClass: 500
+  maxFalseMethodsPerClass: 1000
   unicodeStartInDecimal: 65
   numberOfCharacters: 2
   createNameTranslationFile: 0
@@ -236,7 +236,7 @@ MonoBehaviour:
   - OnFailStart_
   - OnFailStop_
   skipEnums: 1
-  maxInstructionsForCloning: 3500
+  maxInstructionsForCloning: 4500
   preserveNamespaces: 0
   obfuscateMonoBehaviourClassNames: 0
   replaceLiterals:
